@@ -1,154 +1,144 @@
-"""
-Day 4: Orthogonality & Orthogonal Matrices
-Practical Implementation in Python
+# Day 4: Orthogonality & Perpendicular Vectors
+# When vectors are perpendicular to each other  
+# Amey Prakash Sawant
 
-Author: Amey Prakash Sawant
-100 Days of AI/ML Journey
-"""
+import math
 
-import numpy as np
-import matplotlib.pyplot as plt
+# Orthogonal = perpendicular (90 degree angle)
+print("Day 4: Orthogonal Vectors")
+print("=" * 25)
 
-# ============================================
-# 1. ORTHOGONALITY CHECK
-# ============================================
+# Check if vectors are perpendicular
+def are_perpendicular(vec1, vec2):
+    # Vectors are perpendicular if their dot product = 0
+    dot_product = sum(vec1[i] * vec2[i] for i in range(len(vec1)))
+    return abs(dot_product) < 0.0001  # Close to zero
 
-print("=" * 50)
-print("1. ORTHOGONALITY CHECK")
-print("=" * 50)
+# Standard basis vectors are perpendicular
+e1 = [1, 0, 0]  # x-axis
+e2 = [0, 1, 0]  # y-axis  
+e3 = [0, 0, 1]  # z-axis
 
-def are_orthogonal(u, v, tol=1e-10):
-    """Check if two vectors are orthogonal"""
-    return abs(np.dot(u, v)) < tol
-
-# Example: Standard basis vectors
-e1 = np.array([1, 0, 0])
-e2 = np.array([0, 1, 0])
-e3 = np.array([0, 0, 1])
-
+print(f"Basis vectors:")
 print(f"e1 = {e1}")
 print(f"e2 = {e2}")
-print(f"e1 · e2 = {np.dot(e1, e2)}")
-print(f"Are e1 and e2 orthogonal? {are_orthogonal(e1, e2)}")
+print(f"e3 = {e3}")
 
-# Non-orthogonal vectors
-u = np.array([1, 1, 0])
-v = np.array([1, 0, 0])
-print(f"\nu = {u}")
+dot_e1_e2 = sum(e1[i] * e2[i] for i in range(len(e1)))
+print(f"\ne1 · e2 = {dot_e1_e2}")
+print(f"Are e1 and e2 perpendicular? {are_perpendicular(e1, e2)}")
+
+# Non-perpendicular example
+u = [1, 1, 0]
+v = [1, 0, 0]
+dot_uv = sum(u[i] * v[i] for i in range(len(u)))
+print(f"\nOther vectors:")
+print(f"u = {u}")  
 print(f"v = {v}")
-print(f"u · v = {np.dot(u, v)}")
-print(f"Are u and v orthogonal? {are_orthogonal(u, v)}")
+print(f"u · v = {dot_uv}")
+print(f"Are u and v perpendicular? {are_perpendicular(u, v)}")
 
 
-# ============================================
-# 2. ORTHONORMAL VECTORS
-# ============================================
+# Orthonormal vectors - perpendicular AND unit length
+print("\nOrthonormal Vectors:")
+print("-" * 19)
 
-print("\n" + "=" * 50)
-print("2. ORTHONORMAL VECTORS")
-print("=" * 50)
+def vector_length(vec):
+    return math.sqrt(sum(x*x for x in vec))
 
-def is_orthonormal(vectors, tol=1e-10):
-    """Check if a set of vectors is orthonormal"""
-    n = len(vectors)
-    for i in range(n):
-        # Check unit length
-        if abs(np.linalg.norm(vectors[i]) - 1) > tol:
-            return False, f"Vector {i} is not unit length"
-        # Check orthogonality with others
-        for j in range(i+1, n):
-            if abs(np.dot(vectors[i], vectors[j])) > tol:
-                return False, f"Vectors {i} and {j} are not orthogonal"
-    return True, "Vectors are orthonormal"
+def make_unit_vector(vec):
+    length = vector_length(vec)
+    return [x/length for x in vec]
 
-# Check standard basis
-basis = [e1, e2, e3]
-result, msg = is_orthonormal(basis)
-print(f"Standard basis orthonormal? {result} - {msg}")
+# Standard basis vectors are already orthonormal
+print("Standard basis vectors:")
+for i, vec in enumerate([e1, e2, e3]):
+    length = vector_length(vec)
+    print(f"e{i+1} = {vec}, length = {length}")
 
-# Create orthonormal basis (not standard)
-u1 = np.array([1, 1, 0]) / np.sqrt(2)
-u2 = np.array([-1, 1, 0]) / np.sqrt(2)
-u3 = np.array([0, 0, 1])
+print("✓ Perpendicular to each other")  
+print("✓ Each has length 1")
+print("= ORTHONORMAL")
 
-custom_basis = [u1, u2, u3]
-result, msg = is_orthonormal(custom_basis)
-print(f"\nCustom basis: {[v.round(3) for v in custom_basis]}")
-print(f"Orthonormal? {result} - {msg}")
+# Make custom orthonormal vectors
+v1 = [1, 1, 0]
+v1_unit = make_unit_vector(v1)
+print(f"\nCustom vector: {v1}")
+print(f"Made unit: {[round(x, 3) for x in v1_unit]}")
+print(f"Length: {vector_length(v1_unit):.3f}")
 
+# Gram-Schmidt process - make perpendicular vectors
+print("\nGram-Schmidt Process:")
+print("-" * 21)
+print("Take non-perpendicular vectors, make them perpendicular")
 
-# ============================================
-# 3. ORTHOGONAL MATRICES
-# ============================================
+# Start with two vectors that aren't perpendicular
+a = [1, 1]
+b = [1, 0]
 
-print("\n" + "=" * 50)
-print("3. ORTHOGONAL MATRICES")
-print("=" * 50)
+print(f"Original vectors: a = {a}, b = {b}")
+dot_ab = sum(a[i] * b[i] for i in range(len(a)))
+print(f"a · b = {dot_ab} (not zero, so not perpendicular)")
 
-def is_orthogonal_matrix(Q, tol=1e-10):
-    """Check if a matrix is orthogonal"""
-    n = Q.shape[0]
-    QTQ = Q.T @ Q
-    return np.allclose(QTQ, np.eye(n), atol=tol)
+# Step 1: Keep first vector as is
+u1 = a[:]
+print(f"\nStep 1: u1 = a = {u1}")
 
-# Create orthogonal matrix from orthonormal vectors
-Q = np.column_stack([u1, u2, u3])
-print(f"Matrix Q:\n{Q}")
-print(f"\nQ^T @ Q:\n{(Q.T @ Q).round(10)}")
-print(f"\nIs Q orthogonal? {is_orthogonal_matrix(Q)}")
-print(f"\nQ^-1 (computed):\n{np.linalg.inv(Q).round(10)}")
-print(f"\nQ^T (should equal Q^-1):\n{Q.T.round(10)}")
+# Step 2: Remove component of b that's parallel to u1
+# Formula: u2 = b - proj_u1(b)
+# proj_u1(b) = (b·u1 / u1·u1) * u1
 
-# Key property: inverse = transpose
-print(f"\nQ^-1 == Q^T? {np.allclose(np.linalg.inv(Q), Q.T)}")
+dot_b_u1 = sum(b[i] * u1[i] for i in range(len(b)))
+dot_u1_u1 = sum(u1[i] * u1[i] for i in range(len(u1)))
+projection_scalar = dot_b_u1 / dot_u1_u1
 
+projection = [projection_scalar * u1[i] for i in range(len(u1))]
+u2 = [b[i] - projection[i] for i in range(len(b))]
 
-# ============================================
-# 4. ROTATION MATRICES
-# ============================================
+print(f"Step 2: Project b onto u1")
+print(f"Projection of b onto u1: {projection}")
+print(f"u2 = b - projection = {u2}")
 
-print("\n" + "=" * 50)
-print("4. ROTATION MATRICES")
-print("=" * 50)
+# Verify they're perpendicular
+dot_u1_u2 = sum(u1[i] * u2[i] for i in range(len(u1)))
+print(f"\nCheck: u1 · u2 = {dot_u1_u2:.10f} (should be ~0)")
+print("✓ Now they're perpendicular!")
 
-def rotation_matrix_2d(theta):
-    """Create 2D rotation matrix for angle theta (in radians)"""
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array([[c, -s],
-                     [s, c]])
+# Make them unit vectors too (orthonormal)
+e1_new = make_unit_vector(u1)
+e2_new = make_unit_vector(u2)
 
-def rotation_matrix_3d_z(theta):
-    """Rotation around z-axis"""
-    c, s = np.cos(theta), np.sin(theta)
-    return np.array([[c, -s, 0],
-                     [s, c, 0],
-                     [0, 0, 1]])
+print(f"\nMade unit vectors:")
+print(f"e1 = {[round(x, 3) for x in e1_new]}")  
+print(f"e2 = {[round(x, 3) for x in e2_new]}")
+print("Now we have orthonormal vectors!")
+
+# Rotation matrices - special orthogonal matrices
+print("\nRotation Matrices:")
+print("-" * 17)
+
+def rotation_2d(angle_deg):
+    angle_rad = math.radians(angle_deg)
+    cos_a = math.cos(angle_rad)
+    sin_a = math.sin(angle_rad)
+    return [[cos_a, -sin_a],
+            [sin_a, cos_a]]
 
 # 90 degree rotation
-theta = np.pi / 2  # 90 degrees
-R = rotation_matrix_2d(theta)
-print(f"90° rotation matrix:\n{R.round(10)}")
+R90 = rotation_2d(90)
+print(f"90° rotation matrix:")
+for row in R90:
+    print([round(x, 3) for x in row])
 
 # Rotate a vector
-v = np.array([1, 0])
-v_rotated = R @ v
-print(f"\nOriginal vector: {v}")
-print(f"Rotated vector: {v_rotated.round(10)}")
+vector = [1, 0]
+rotated = [R90[0][0]*vector[0] + R90[0][1]*vector[1],
+           R90[1][0]*vector[0] + R90[1][1]*vector[1]]
 
-# Check orthogonality
-print(f"\nIs R orthogonal? {is_orthogonal_matrix(R)}")
-print(f"det(R) = {np.linalg.det(R):.4f} (1 for rotation, -1 for reflection)")
+print(f"\nRotate {vector} by 90°: {[round(x, 3) for x in rotated]}")
+print("Rotates [1,0] to [0,1] ✓")
 
-# Composing rotations
-R1 = rotation_matrix_2d(np.pi/4)  # 45°
-R2 = rotation_matrix_2d(np.pi/4)  # 45°
-R_composed = R1 @ R2  # Should be 90°
-R_90 = rotation_matrix_2d(np.pi/2)
-print(f"\nR(45°) @ R(45°) == R(90°)? {np.allclose(R_composed, R_90)}")
-
-
-# ============================================
-# 5. GRAM-SCHMIDT ORTHOGONALIZATION
+print("\nDay 4 complete! ✅")
 # ============================================
 
 print("\n" + "=" * 50)

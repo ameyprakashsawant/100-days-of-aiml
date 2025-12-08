@@ -1,159 +1,129 @@
-"""
-Day 2: Span, Linear Independence & Basis
-Practical Implementation in Python
-
-Author: Amey Prakash Sawant
-100 Days of AI/ML Journey
-"""
+# Day 2: Span, Linear Independence & Basis
+# Understanding how vectors work together
+# Amey Prakash Sawant
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
-# ============================================
-# 1. LINEAR COMBINATIONS AND SPAN
-# ============================================
+# Linear combinations - mixing vectors
+print("Day 2: Vector Combinations and Independence")
+print("=" * 40)
 
-print("=" * 50)
-print("1. LINEAR COMBINATIONS AND SPAN")
-print("=" * 50)
+# Basic vectors
+v1 = [1, 0]
+v2 = [0, 1]
 
-# Define basis vectors
-v1 = np.array([1, 0])
-v2 = np.array([0, 1])
-
-# Any vector in R² can be written as a linear combination
-def linear_combination(vectors, coefficients):
-    """Compute linear combination of vectors with given coefficients"""
-    result = np.zeros(vectors[0].shape)
-    for v, c in zip(vectors, coefficients):
-        result += c * v
+# Make new vectors by mixing these
+def combine_vectors(vectors, amounts):
+    result = [0, 0]
+    for i, vector in enumerate(vectors):
+        amount = amounts[i]
+        for j in range(len(vector)):
+            result[j] += amount * vector[j]
     return result
 
-# Example: Create vector [3, 4] using basis vectors
-target = np.array([3, 4])
-coeffs = [3, 4]  # 3*v1 + 4*v2
-result = linear_combination([v1, v2], coeffs)
-print(f"v1 = {v1}, v2 = {v2}")
-print(f"3*v1 + 4*v2 = {result}")
-print(f"Target: {target}, Match: {np.allclose(result, target)}")
+# Example: make [3, 4] using standard basis
+target = [3, 4]
+amounts = [3, 4]  # 3*v1 + 4*v2
+result = combine_vectors([v1, v2], amounts)
+print(f"Basic vectors: {v1}, {v2}")
+print(f"Mix with amounts {amounts}: {result}")
+print(f"Target was {target} - match!")
 
-# Non-standard basis
-b1 = np.array([1, 1])
-b2 = np.array([1, -1])
-# To get [3, 4] in this basis: solve c1*b1 + c2*b2 = [3, 4]
-# [1, 1]*c1 + [1, -1]*c2 = [3, 4]
-# c1 + c2 = 3
-# c1 - c2 = 4
-# c1 = 3.5, c2 = -0.5
-coeffs_new = [3.5, -0.5]
-result_new = linear_combination([b1, b2], coeffs_new)
-print(f"\nUsing different basis:")
-print(f"b1 = {b1}, b2 = {b2}")
-print(f"3.5*b1 + (-0.5)*b2 = {result_new}")
+# Try different basis vectors
+new_v1 = [1, 1]
+new_v2 = [1, -1]
+# To make [3, 4] with these vectors:
+# a*[1,1] + b*[1,-1] = [3,4]
+# a + b = 3, a - b = 4
+# Solving: a = 3.5, b = -0.5
+new_amounts = [3.5, -0.5]
+new_result = combine_vectors([new_v1, new_v2], new_amounts)
+print(f"\nDifferent basis: {new_v1}, {new_v2}")
+print(f"Mix with amounts {new_amounts}: {new_result}")
+print(f"Same target {target}!")
 
+# Linear independence - can one vector be made from others?
+print("\nLinear Independence:")
+print("-" * 20)
 
-# ============================================
-# 2. CHECKING LINEAR INDEPENDENCE
-# ============================================
+# Independent vectors - can't make one from the other
+vec1 = [1, 0]
+vec2 = [0, 1]
+print(f"Vectors {vec1} and {vec2}:")
+print("Can we make [1,0] from some amount of [0,1]? No!")
+print("These are INDEPENDENT")
 
-print("\n" + "=" * 50)
-print("2. CHECKING LINEAR INDEPENDENCE")
-print("=" * 50)
+# Dependent vectors - one is just a multiple of the other
+vec3 = [1, 2]
+vec4 = [2, 4]  # This is just 2 * [1,2]
+print(f"\nVectors {vec3} and {vec4}:")
+print(f"{vec4} = 2 * {vec3}")
+print("These are DEPENDENT")
 
-def check_linear_independence(vectors):
-    """
-    Check if vectors are linearly independent using matrix rank.
-    Returns True if independent, False if dependent.
-    """
-    # Stack vectors as columns of a matrix
-    matrix = np.column_stack(vectors)
-    rank = np.linalg.matrix_rank(matrix)
-    num_vectors = len(vectors)
+# Three 2D vectors - always dependent
+vec5 = [1, 0]
+vec6 = [0, 1]
+vec7 = [1, 1]
+print(f"\nThree 2D vectors: {vec5}, {vec6}, {vec7}")
+# [1,1] = 1*[1,0] + 1*[0,1]
+print("[1,1] = 1*[1,0] + 1*[0,1]")
+print("In 2D space, max 2 independent vectors")
+
+# Check if vectors are dependent (simple version)
+def vectors_dependent_2d(v1, v2):
+    # If v1 = k*v2 for some k, they're dependent
+    # Check if v1[0]/v2[0] == v1[1]/v2[1] (avoiding division by zero)
+    if v2[0] == 0 and v2[1] == 0:
+        return True
+    if v2[0] == 0:
+        return v1[0] == 0
+    if v2[1] == 0:
+        return v1[1] == 0
     
-    is_independent = rank == num_vectors
-    return is_independent, rank, num_vectors
-
-# Example 1: Independent vectors
-v1 = np.array([1, 0])
-v2 = np.array([0, 1])
-is_ind, rank, n = check_linear_independence([v1, v2])
-print(f"Vectors: {v1}, {v2}")
-print(f"Independent: {is_ind} (rank={rank}, vectors={n})")
-
-# Example 2: Dependent vectors
-v1 = np.array([1, 2])
-v2 = np.array([2, 4])  # v2 = 2*v1
-is_ind, rank, n = check_linear_independence([v1, v2])
-print(f"\nVectors: {v1}, {v2}")
-print(f"Independent: {is_ind} (rank={rank}, vectors={n})")
-
-# Example 3: 3 vectors in R²
-v1 = np.array([1, 0])
-v2 = np.array([0, 1])
-v3 = np.array([1, 1])
-is_ind, rank, n = check_linear_independence([v1, v2, v3])
-print(f"\nVectors: {v1}, {v2}, {v3}")
-print(f"Independent: {is_ind} (rank={rank}, vectors={n})")
-print("(More vectors than dimensions → always dependent)")
-
-# Example 4: 3D vectors
-v1 = np.array([1, 0, 0])
-v2 = np.array([0, 1, 0])
-v3 = np.array([0, 0, 1])
-is_ind, rank, n = check_linear_independence([v1, v2, v3])
-print(f"\nVectors in 3D: {v1}, {v2}, {v3}")
-print(f"Independent: {is_ind} (rank={rank}, vectors={n})")
-
-
-# ============================================
-# 3. FINDING BASIS FROM A SET OF VECTORS
-# ============================================
-
-print("\n" + "=" * 50)
-print("3. FINDING BASIS FROM A SET OF VECTORS")
-print("=" * 50)
-
-def find_basis(vectors):
-    """
-    Find a basis from a set of vectors using row reduction.
-    Returns indices of vectors that form a basis.
-    """
-    matrix = np.column_stack(vectors)
-    m, n = matrix.shape
+    ratio1 = v1[0] / v2[0] if v2[0] != 0 else float('inf')
+    ratio2 = v1[1] / v2[1] if v2[1] != 0 else float('inf')
     
-    # Use QR decomposition to find independent columns
-    Q, R = np.linalg.qr(matrix)
-    
-    # Independent columns have non-zero diagonal in R
-    tol = 1e-10
-    independent_indices = []
-    for i in range(min(m, n)):
-        if abs(R[i, i]) > tol:
-            independent_indices.append(i)
-    
-    return independent_indices
+    return abs(ratio1 - ratio2) < 0.0001
 
-# Example
-vectors = [
-    np.array([1, 0, 0]),
-    np.array([0, 1, 0]),
-    np.array([1, 1, 0]),  # This is dependent (v1 + v2)
-    np.array([0, 0, 1]),
-]
+test1 = [2, 4]
+test2 = [1, 2]
+print(f"\nAre {test1} and {test2} dependent? {vectors_dependent_2d(test1, test2)}")
 
-basis_indices = find_basis(vectors)
-print("Original vectors:")
-for i, v in enumerate(vectors):
-    print(f"  v{i+1}: {v}")
+test3 = [1, 0]
+test4 = [0, 1]
+print(f"Are {test3} and {test4} dependent? {vectors_dependent_2d(test3, test4)}")
 
-print(f"\nBasis indices: {basis_indices}")
-print("Basis vectors:")
-for i in basis_indices:
-    print(f"  v{i+1}: {vectors[i]}")
+# Basis vectors - minimal set that spans the space
+print("\nBasis Vectors:")
+print("-" * 13)
 
+print("Standard 2D basis: [1,0] and [0,1]")
+print("Can make any 2D vector: a*[1,0] + b*[0,1] = [a,b]")
 
-# ============================================
+print("\nAlternative 2D basis: [1,1] and [1,-1]")
+print("Still spans all 2D space, just different coordinates")
+
+# Finding which vectors form a basis (simple approach)
+def find_basis_2d(vectors):
+    basis = []
+    for vec in vectors:
+        # Check if this vector is independent from what we have
+        if len(basis) == 0:
+            basis.append(vec)
+        elif len(basis) == 1:
+            if not vectors_dependent_2d(vec, basis[0]):
+                basis.append(vec)
+        else:
+            break  # Already have 2 vectors in 2D
+    return basis
+
+test_vectors = [[2, 4], [1, 0], [0, 1], [3, 6]]
+basis = find_basis_2d(test_vectors)
+print(f"\nFrom vectors {test_vectors}")
+print(f"Basis found: {basis}")
+
+print("\nDay 2 complete! ✅")
 # 4. MATRIX RANK
 # ============================================
 

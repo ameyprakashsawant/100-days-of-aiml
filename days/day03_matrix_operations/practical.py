@@ -1,208 +1,206 @@
-"""
-Day 3: Matrix Operations
-Practical Implementation in Python
-
-Author: Amey Prakash Sawant
-100 Days of AI/ML Journey
-"""
+# Day 3: Matrix Operations  
+# Working with 2D arrays of numbers
+# Amey Prakash Sawant
 
 import numpy as np
-import matplotlib.pyplot as plt
 
-# ============================================
-# 1. MATRIX CREATION
-# ============================================
+# Matrices - just rectangles of numbers
+print("Day 3: Matrix Operations")
+print("=" * 25)
 
-print("=" * 50)
-print("1. MATRIX CREATION")
-print("=" * 50)
+# Create a matrix (2D list)
+matrix_a = [[1, 2, 3],
+            [4, 5, 6]]
 
-# Different ways to create matrices
-A = np.array([[1, 2, 3],
-              [4, 5, 6]])
+matrix_b = [[7, 8, 9],
+            [10, 11, 12]]
 
-B = np.array([[7, 8, 9],
-              [10, 11, 12]])
+print("Matrix A:")
+for row in matrix_a:
+    print(row)
 
-print(f"Matrix A (2x3):\n{A}")
-print(f"\nMatrix B (2x3):\n{B}")
+print("\nMatrix B:")  
+for row in matrix_b:
+    print(row)
 
-# Special matrices
-zeros = np.zeros((3, 3))
-ones = np.ones((2, 4))
-identity = np.eye(4)
-diagonal = np.diag([1, 2, 3, 4])
-random_matrix = np.random.randn(3, 3)
+# Matrix addition - add corresponding numbers
+def add_matrices(mat1, mat2):
+    result = []
+    for i in range(len(mat1)):
+        new_row = []
+        for j in range(len(mat1[i])):
+            new_row.append(mat1[i][j] + mat2[i][j])
+        result.append(new_row)
+    return result
 
-print(f"\nZero matrix (3x3):\n{zeros}")
-print(f"\nIdentity matrix (4x4):\n{identity}")
-print(f"\nDiagonal matrix:\n{diagonal}")
+sum_matrix = add_matrices(matrix_a, matrix_b)
+print("\nA + B:")
+for row in sum_matrix:
+    print(row)
 
+# Multiply by a number (scalar)
+def multiply_by_number(matrix, num):
+    result = []
+    for i in range(len(matrix)):
+        new_row = []
+        for j in range(len(matrix[i])):
+            new_row.append(matrix[i][j] * num)
+        result.append(new_row)
+    return result
 
-# ============================================
-# 2. MATRIX ADDITION AND SCALAR OPERATIONS
-# ============================================
+scaled = multiply_by_number(matrix_a, 3)
+print(f"\n3 * A:")
+for row in scaled:
+    print(row)
 
-print("\n" + "=" * 50)
-print("2. MATRIX ADDITION AND SCALAR OPERATIONS")
-print("=" * 50)
+# Matrix multiplication - the tricky one!
+print("\nMatrix Multiplication:")
+print("-" * 21)
 
-A = np.array([[1, 2],
-              [3, 4]])
-B = np.array([[5, 6],
-              [7, 8]])
+# For matrices A (2x3) and B (3x2)
+# Result will be (2x2)
+a_mat = [[1, 2, 3],
+         [4, 5, 6]]  # 2 rows, 3 columns
 
-# Addition
-C = A + B
-print(f"A:\n{A}")
-print(f"B:\n{B}")
-print(f"A + B:\n{C}")
+b_mat = [[7,  8],
+         [9,  10], 
+         [11, 12]]   # 3 rows, 2 columns
 
-# Subtraction
-D = A - B
-print(f"\nA - B:\n{D}")
+def matrix_multiply(mat1, mat2):
+    # mat1 is m×n, mat2 is n×p, result is m×p
+    rows1 = len(mat1)
+    cols1 = len(mat1[0])
+    rows2 = len(mat2) 
+    cols2 = len(mat2[0])
+    
+    # Check if multiplication is possible
+    if cols1 != rows2:
+        return "Can't multiply - dimensions don't match!"
+    
+    # Create result matrix
+    result = []
+    for i in range(rows1):
+        new_row = []
+        for j in range(cols2):
+            # Calculate dot product of row i and column j
+            dot_product = 0
+            for k in range(cols1):
+                dot_product += mat1[i][k] * mat2[k][j]
+            new_row.append(dot_product)
+        result.append(new_row)
+    
+    return result
 
-# Scalar multiplication
-scalar = 3
-E = scalar * A
-print(f"\n3 * A:\n{E}")
+result = matrix_multiply(a_mat, b_mat)
+print("A (2x3):")
+for row in a_mat:
+    print(row)
 
-# Element-wise operations
-F = A * B  # Hadamard product (element-wise)
-print(f"\nA * B (element-wise):\n{F}")
+print("\nB (3x2):")
+for row in b_mat:
+    print(row)
 
+print("\nA × B (2x2):")
+for row in result:
+    print(row)
 
-# ============================================
-# 3. MATRIX MULTIPLICATION
-# ============================================
+# Show one calculation step by step
+print(f"\nCalculating result[0][0]:")
+print(f"Row 0 of A: {a_mat[0]}")
+print(f"Column 0 of B: {[b_mat[i][0] for i in range(len(b_mat))]}")
+print(f"Dot product: {a_mat[0][0]}×{b_mat[0][0]} + {a_mat[0][1]}×{b_mat[1][0]} + {a_mat[0][2]}×{b_mat[2][0]}")
+print(f"= {a_mat[0][0]*b_mat[0][0]} + {a_mat[0][1]*b_mat[1][0]} + {a_mat[0][2]*b_mat[2][0]} = {result[0][0]}")
 
-print("\n" + "=" * 50)
-print("3. MATRIX MULTIPLICATION")
-print("=" * 50)
+# Matrix multiplication is NOT commutative!
+print("\nOrder matters in multiplication:")
+small_a = [[1, 2], [3, 4]]
+small_b = [[5, 6], [7, 8]]
 
-A = np.array([[1, 2, 3],
-              [4, 5, 6]])  # 2x3
+ab = matrix_multiply(small_a, small_b)
+ba = matrix_multiply(small_b, small_a)
 
-B = np.array([[7, 8],
-              [9, 10],
-              [11, 12]])  # 3x2
+print("A × B:")
+for row in ab:
+    print(row)
 
-# Matrix multiplication
-C = A @ B  # or np.matmul(A, B) or np.dot(A, B)
-print(f"A (2x3):\n{A}")
-print(f"\nB (3x2):\n{B}")
-print(f"\nA @ B (2x2):\n{C}")
+print("\nB × A:")  
+for row in ba:
+    print(row)
 
-# Verify dimensions
-print(f"\nDimensions: {A.shape} @ {B.shape} = {C.shape}")
+print("A × B ≠ B × A (usually)")
 
-# Manual calculation verification
-print("\nManual verification of C[0,0]:")
-print(f"  A[0,:] @ B[:,0] = {A[0,:]} @ {B[:,0]} = {np.dot(A[0,:], B[:,0])}")
+# Identity matrix - like multiplying by 1
+print("\nIdentity Matrix:")
+print("-" * 15)
 
-# Matrix multiplication is NOT commutative
-print("\n--- Commutativity Check ---")
-P = np.array([[1, 2],
-              [3, 4]])
-Q = np.array([[5, 6],
-              [7, 8]])
-print(f"P @ Q:\n{P @ Q}")
-print(f"\nQ @ P:\n{Q @ P}")
-print(f"\nP @ Q == Q @ P? {np.allclose(P @ Q, Q @ P)}")
+identity = [[1, 0, 0],
+            [0, 1, 0], 
+            [0, 0, 1]]
 
+test_matrix = [[1, 2, 3],
+               [4, 5, 6],
+               [7, 8, 9]]
 
-# ============================================
-# 4. IDENTITY MATRIX
-# ============================================
+result_with_identity = matrix_multiply(test_matrix, identity)
 
-print("\n" + "=" * 50)
-print("4. IDENTITY MATRIX")
-print("=" * 50)
+print("Matrix × Identity = Matrix (unchanged)")
+print("Original:")
+for row in test_matrix:
+    print(row)
 
-I = np.eye(3)
-A = np.array([[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 9]])
+print("\nAfter × Identity:")
+for row in result_with_identity:
+    print(row)
 
-print(f"Identity matrix I:\n{I}")
-print(f"\nMatrix A:\n{A}")
-print(f"\nA @ I:\n{A @ I}")
-print(f"\nI @ A:\n{I @ A}")
-print(f"\nA @ I == A? {np.allclose(A @ I, A)}")
-print(f"I @ A == A? {np.allclose(I @ A, A)}")
+# Transpose - flip across diagonal
+print("\nTranspose (flip across diagonal):")
+print("-" * 32)
 
+original = [[1, 2, 3],
+            [4, 5, 6]]
 
-# ============================================
-# 5. TRANSPOSE
-# ============================================
+def transpose(matrix):
+    rows = len(matrix)
+    cols = len(matrix[0])
+    result = []
+    
+    for j in range(cols):  # New rows = old columns
+        new_row = []
+        for i in range(rows):  # New cols = old rows
+            new_row.append(matrix[i][j])
+        result.append(new_row)
+    
+    return result
 
-print("\n" + "=" * 50)
-print("5. TRANSPOSE")
-print("=" * 50)
+transposed = transpose(original)
 
-A = np.array([[1, 2, 3],
-              [4, 5, 6]])
+print("Original (2×3):")
+for row in original:
+    print(row)
 
-print(f"A:\n{A}")
-print(f"A.shape: {A.shape}")
+print("\nTransposed (3×2):")
+for row in transposed:
+    print(row)
 
-print(f"\nA.T (transpose):\n{A.T}")
-print(f"A.T.shape: {A.T.shape}")
+# Symmetric matrix - equals its transpose
+symmetric = [[1, 2, 3],
+             [2, 4, 5],
+             [3, 5, 6]]
 
-# Property: (A^T)^T = A
-print(f"\n(A^T)^T == A? {np.allclose(A.T.T, A)}")
+symmetric_T = transpose(symmetric)
 
-# Property: (AB)^T = B^T @ A^T
-B = np.array([[1, 2],
-              [3, 4],
-              [5, 6]])
+print(f"\nSymmetric matrix example:")
+print("Original:")
+for row in symmetric:
+    print(row)
 
-AB = A @ B
-print(f"\n(A @ B)^T:\n{(A @ B).T}")
-print(f"B^T @ A^T:\n{B.T @ A.T}")
-print(f"(AB)^T == B^T @ A^T? {np.allclose((A @ B).T, B.T @ A.T)}")
+print("\nTranspose:")
+for row in symmetric_T:
+    print(row)
 
+print("They're the same! (symmetric)")
 
-# ============================================
-# 6. SYMMETRIC MATRICES
-# ============================================
-
-print("\n" + "=" * 50)
-print("6. SYMMETRIC MATRICES")
-print("=" * 50)
-
-# Create symmetric matrix
-A = np.array([[1, 2, 3],
-              [2, 4, 5],
-              [3, 5, 6]])
-
-print(f"Matrix A:\n{A}")
-print(f"\nA^T:\n{A.T}")
-print(f"\nIs A symmetric (A == A^T)? {np.allclose(A, A.T)}")
-
-# Creating symmetric from any matrix: (A + A^T) / 2
-B = np.array([[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 9]])
-
-B_symmetric = (B + B.T) / 2
-print(f"\nOriginal B:\n{B}")
-print(f"\n(B + B^T)/2 (made symmetric):\n{B_symmetric}")
-print(f"Is symmetric? {np.allclose(B_symmetric, B_symmetric.T)}")
-
-# Covariance matrix is always symmetric
-X = np.random.randn(100, 3)  # 100 samples, 3 features
-cov_matrix = np.cov(X.T)
-print(f"\nCovariance matrix:\n{cov_matrix}")
-print(f"Is covariance symmetric? {np.allclose(cov_matrix, cov_matrix.T)}")
-
-
-# ============================================
-# 7. MATRIX INVERSE
-# ============================================
-
-print("\n" + "=" * 50)
-print("7. MATRIX INVERSE")
+print("\nDay 3 complete! ✅")
 print("=" * 50)
 
 A = np.array([[4, 7],

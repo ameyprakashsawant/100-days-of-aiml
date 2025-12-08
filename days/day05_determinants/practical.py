@@ -1,52 +1,93 @@
-"""
-Day 5: Determinants
-Practical Implementation in Python
+# Day 5: Determinants
+# A single number that tells us about a matrix
+# Amey Prakash Sawant
 
-Author: Amey Prakash Sawant
-100 Days of AI/ML Journey
-"""
+# Determinants - like a signature of the matrix
+print("Day 5: Determinants")
+print("=" * 18)
 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
-from matplotlib.collections import PatchCollection
+# For 2x2 matrix, determinant = ad - bc
+def det_2x2(matrix):
+    # [[a, b],
+    #  [c, d]]
+    a = matrix[0][0]
+    b = matrix[0][1] 
+    c = matrix[1][0]
+    d = matrix[1][1]
+    return a * d - b * c
 
-# ============================================
-# 1. COMPUTING DETERMINANTS
-# ============================================
+# Example 2x2 matrix
+mat_2x2 = [[3, 2],
+           [1, 4]]
 
-print("=" * 50)
-print("1. COMPUTING DETERMINANTS")
-print("=" * 50)
+det_value = det_2x2(mat_2x2)
+print("2x2 Matrix:")
+for row in mat_2x2:
+    print(row)
 
-# 2x2 Matrix
-A_2x2 = np.array([[3, 2],
-                  [1, 4]])
+print(f"\nDeterminant = {mat_2x2[0][0]}×{mat_2x2[1][1]} - {mat_2x2[0][1]}×{mat_2x2[1][0]}")
+print(f"           = {mat_2x2[0][0]*mat_2x2[1][1]} - {mat_2x2[0][1]*mat_2x2[1][0]}")  
+print(f"           = {det_value}")
 
-det_2x2 = np.linalg.det(A_2x2)
-det_manual = A_2x2[0,0]*A_2x2[1,1] - A_2x2[0,1]*A_2x2[1,0]
+# For 3x3 matrix, use cofactor expansion
+def det_3x3(matrix):
+    # Expand along first row
+    a = matrix[0][0] 
+    b = matrix[0][1]
+    c = matrix[0][2]
+    
+    # 2x2 determinants (minors)
+    minor1 = matrix[1][1]*matrix[2][2] - matrix[1][2]*matrix[2][1]
+    minor2 = matrix[1][0]*matrix[2][2] - matrix[1][2]*matrix[2][0]  
+    minor3 = matrix[1][0]*matrix[2][1] - matrix[1][1]*matrix[2][0]
+    
+    # Cofactor expansion: a*minor1 - b*minor2 + c*minor3
+    return a*minor1 - b*minor2 + c*minor3
 
-print(f"2x2 Matrix:\n{A_2x2}")
-print(f"det(A) using numpy: {det_2x2:.4f}")
-print(f"det(A) manual (ad-bc): {det_manual:.4f}")
+# Example 3x3 matrix
+mat_3x3 = [[1, 2, 3],
+           [4, 5, 6], 
+           [7, 8, 10]]
 
-# 3x3 Matrix
-A_3x3 = np.array([[1, 2, 3],
-                  [4, 5, 6],
-                  [7, 8, 10]])
+det_3x3_value = det_3x3(mat_3x3)
+print("\n3x3 Matrix:")
+for row in mat_3x3:
+    print(row)
 
-det_3x3 = np.linalg.det(A_3x3)
-print(f"\n3x3 Matrix:\n{A_3x3}")
-print(f"det(A) = {det_3x3:.4f}")
+print(f"\nDeterminant = {det_3x3_value}")
 
+# What determinant tells us
+print("\nWhat the determinant means:")
+print("-" * 26)
 
-# ============================================
-# 2. GEOMETRIC INTERPRETATION (AREA SCALING)
-# ============================================
+# Zero determinant = no inverse (singular)
+singular = [[1, 2],
+            [2, 4]]  # Second row is 2× first row
 
-print("\n" + "=" * 50)
-print("2. GEOMETRIC INTERPRETATION")
-print("=" * 50)
+det_singular = det_2x2(singular)
+print(f"Matrix {singular}")
+print(f"Determinant = {det_singular}")
+print("Zero determinant = NO INVERSE = SINGULAR")
+
+# Negative determinant = orientation change
+negative_det = [[0, 1],
+                [1, 0]]  # Swap x and y axes
+
+det_negative = det_2x2(negative_det)
+print(f"\nMatrix {negative_det}")
+print(f"Determinant = {det_negative}")
+print("Negative determinant = FLIPS ORIENTATION")
+
+# Identity matrix
+identity = [[1, 0],
+            [0, 1]]
+
+det_identity = det_2x2(identity)
+print(f"\nIdentity matrix {identity}")
+print(f"Determinant = {det_identity}")
+print("Identity has determinant 1 (no change)")
+
+print("\nDay 5 complete! ✅")
 
 # Unit square transformation
 def visualize_transformation(A, title):

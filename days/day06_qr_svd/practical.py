@@ -1,53 +1,113 @@
-"""
-Day 6: QR Decomposition & SVD
-Practical Implementation in Python
+# Day 6: QR and SVD
+# Breaking down matrices in useful ways
+# Amey Prakash Sawant
 
-Author: Amey Prakash Sawant
-100 Days of AI/ML Journey
-"""
+print("Day 6: QR Decomposition & SVD")
+print("=" * 29)
 
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
-import requests
-from io import BytesIO
+# QR Decomposition - breaking matrix into Q (orthogonal) and R (triangular)
+# Think of it as reorganizing data
 
-# ============================================
-# 1. QR DECOMPOSITION
-# ============================================
+# Simple example matrix
+A = [[1, 2],
+     [3, 4],
+     [5, 6]]
 
-print("=" * 50)
-print("1. QR DECOMPOSITION")
-print("=" * 50)
+print("Matrix A (3x2):")
+for row in A:
+    print(row)
 
-A = np.array([[1, 2, 3],
-              [4, 5, 6],
-              [7, 8, 10],
-              [2, 1, 0]], dtype=float)
+# For QR decomposition, we need orthogonal vectors
+# Let's do a simple Gram-Schmidt like Day 4
 
-print(f"Matrix A (4x3):\n{A}")
+def normalize_vector(v):
+    # Make vector length 1
+    length = 0
+    for x in v:
+        length += x * x
+    length = length ** 0.5
+    
+    return [x / length for x in v]
 
-# Compute QR decomposition
-Q, R = np.linalg.qr(A)
+def dot_product(v1, v2):
+    result = 0
+    for i in range(len(v1)):
+        result += v1[i] * v2[i]
+    return result
 
-print(f"\nQ (orthogonal matrix, 4x3):\n{Q.round(4)}")
-print(f"\nR (upper triangular, 3x3):\n{R.round(4)}")
+def subtract_vectors(v1, v2):
+    return [v1[i] - v2[i] for i in range(len(v1))]
 
-# Verify
-print(f"\nQ @ R:\n{(Q @ R).round(4)}")
-print(f"Q @ R == A? {np.allclose(Q @ R, A)}")
+def multiply_vector(v, scalar):
+    return [x * scalar for x in v]
 
-# Check Q is orthogonal
-print(f"\nQ^T @ Q:\n{(Q.T @ Q).round(10)}")
-print(f"Q has orthonormal columns? {np.allclose(Q.T @ Q, np.eye(3))}")
+# Get columns of A
+col1 = [A[i][0] for i in range(len(A))]  # [1, 3, 5]
+col2 = [A[i][1] for i in range(len(A))]  # [2, 4, 6]
 
+print(f"\nColumn 1: {col1}")
+print(f"Column 2: {col2}")
 
-# ============================================
-# 2. SOLVING LEAST SQUARES WITH QR
-# ============================================
+# Gram-Schmidt to get orthogonal vectors
+q1 = normalize_vector(col1)
+print(f"\nOrthonormal vector 1: {[round(x, 3) for x in q1]}")
 
-print("\n" + "=" * 50)
-print("2. SOLVING LEAST SQUARES WITH QR")
+# Make col2 perpendicular to q1
+projection = multiply_vector(q1, dot_product(col2, q1))
+col2_perp = subtract_vectors(col2, projection)
+q2 = normalize_vector(col2_perp)
+print(f"Orthonormal vector 2: {[round(x, 3) for x in q2]}")
+
+print("\nThis is the idea behind QR decomposition!")
+print("Q = orthogonal matrix, R = triangular matrix")
+
+print("\n" + "-" * 30)
+
+# SVD - Singular Value Decomposition
+# Think of it as finding the "principal directions" of data
+print("SVD - Finding main directions in data")
+
+# Example: ratings matrix (users × movies)
+ratings = [[5, 3, 0, 1],
+           [4, 0, 0, 1], 
+           [1, 1, 0, 5],
+           [1, 0, 0, 4],
+           [0, 1, 5, 4]]
+
+print("\nUser-Movie ratings matrix:")
+print("Users → rows, Movies → columns")
+for i, row in enumerate(ratings):
+    print(f"User {i+1}: {row}")
+
+print("\nSVD finds:")
+print("1. Main patterns in user preferences")
+print("2. Main patterns in movie types") 
+print("3. How strong each pattern is")
+
+print("\nExample patterns SVD might find:")
+print("- Pattern 1: Action movie lovers vs Drama lovers")
+print("- Pattern 2: Popular movies vs Niche movies")
+print("- Pattern 3: New movies vs Classic movies")
+
+# Simple example of how SVD helps
+print("\nHow SVD helps:")
+print("- Compress data (keep main patterns)")
+print("- Remove noise")
+print("- Find similar users/movies")
+print("- Make recommendations")
+
+# Image compression example concept
+print("\nSVD in image compression:")
+print("- Image = matrix of pixel values")
+print("- SVD finds main 'features' of image")
+print("- Keep top features = compressed image")
+print("- Throw away small features = less storage")
+
+print("\nDay 6 complete! ✅")
+print("\nKey takeaways:")
+print("- QR: Good for solving equations accurately")
+print("- SVD: Good for finding patterns and compression")
+print("- Both help us understand matrix structure")
 print("=" * 50)
 
 # Generate data
